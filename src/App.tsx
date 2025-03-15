@@ -13,6 +13,9 @@ import EmployeeList from "./pages/admin/EmployeeList";
 import AddEmployee from "./pages/admin/AddEmployee";
 import EditEmployee from "./pages/admin/EditEmployee";
 import EmployeeDashboard from "./pages/employee/Dashboard";
+import EmployeeProfile from "./pages/employee/Profile";
+import EditProfile from "./pages/employee/EditProfile";
+import Attendance from "./pages/employee/Attendance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -100,6 +103,30 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['employee']}>
                   <EmployeeDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/employee/profile" 
+              element={
+                <ProtectedRoute allowedRoles={['employee']}>
+                  <EmployeeProfile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/employee/profile/edit" 
+              element={
+                <ProtectedRoute allowedRoles={['employee']}>
+                  <EditProfile />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/employee/attendance" 
+              element={
+                <ProtectedRoute allowedRoles={['employee']}>
+                  <Attendance />
                 </ProtectedRoute>
               } 
             />

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
-import { Users, UserCircle, Menu, X, LogOut } from 'lucide-react';
+import { Users, UserCircle, Menu, X, LogOut, ClipboardList, CalendarClock } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -62,12 +62,26 @@ const Navbar: React.FC = () => {
                 </>
               )}
               {isEmployee && (
-                <Link 
-                  to="/employee/dashboard" 
-                  className="text-gray-700 hover:text-primary transition-colors duration-300"
-                >
-                  My Profile
-                </Link>
+                <>
+                  <Link 
+                    to="/employee/dashboard" 
+                    className="text-gray-700 hover:text-primary transition-colors duration-300"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link 
+                    to="/employee/profile" 
+                    className="text-gray-700 hover:text-primary transition-colors duration-300"
+                  >
+                    Profile
+                  </Link>
+                  <Link 
+                    to="/employee/attendance" 
+                    className="text-gray-700 hover:text-primary transition-colors duration-300"
+                  >
+                    Attendance
+                  </Link>
+                </>
               )}
               <div className="flex items-center space-x-2">
                 <UserCircle className="h-5 w-5 text-primary" />
@@ -136,13 +150,30 @@ const Navbar: React.FC = () => {
                   </>
                 )}
                 {isEmployee && (
-                  <Link 
-                    to="/employee/dashboard" 
-                    className="text-gray-700 hover:text-primary py-2 transition-colors duration-300"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    My Profile
-                  </Link>
+                  <>
+                    <Link 
+                      to="/employee/dashboard" 
+                      className="text-gray-700 hover:text-primary py-2 transition-colors duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <Link 
+                      to="/employee/profile" 
+                      className="text-gray-700 hover:text-primary py-2 transition-colors duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <Link 
+                      to="/employee/attendance" 
+                      className="text-gray-700 hover:text-primary py-2 transition-colors duration-300 flex items-center"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <CalendarClock className="h-4 w-4 mr-2" />
+                      Attendance
+                    </Link>
+                  </>
                 )}
                 <Button 
                   variant="outline"
