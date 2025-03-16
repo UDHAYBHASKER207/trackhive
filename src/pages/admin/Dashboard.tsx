@@ -26,7 +26,6 @@ import {
   Users, 
   Briefcase, 
   Building, 
-  BarChart, 
   CheckCircle, 
   XCircle,
   ArrowUpRight
@@ -130,52 +129,28 @@ const AdminDashboard = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="departments">Departments</TabsTrigger>
-              </TabsList>
-              <TabsContent value="overview" className="animate-slide-up">
-                <Card className="bg-white shadow-sm">
-                  <CardHeader>
-                    <CardTitle>Employee Overview</CardTitle>
-                    <CardDescription>Distribution of employees across the organization</CardDescription>
-                  </CardHeader>
-                  <CardContent className="h-[300px] flex items-center justify-center">
-                    <div className="text-center p-8">
-                      <BarChart className="h-16 w-16 text-primary mx-auto mb-4" />
-                      <p className="text-muted-foreground">
-                        Department-based employee distribution chart would appear here
-                      </p>
+            <Card className="bg-white shadow-sm">
+              <CardHeader>
+                <CardTitle>Department Distribution</CardTitle>
+                <CardDescription>Number of employees in each department</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {Object.entries(departmentCounts).map(([dept, count]) => (
+                    <div key={dept} className="flex items-center justify-between p-3 bg-muted rounded-md">
+                      <div className="flex items-center">
+                        <Building className="h-5 w-5 text-primary mr-3" />
+                        <span className="font-medium">{dept}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className="text-muted-foreground mr-2">{count} employees</span>
+                        <div className="w-2 h-2 rounded-full bg-primary"></div>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="departments" className="animate-slide-up">
-                <Card className="bg-white shadow-sm">
-                  <CardHeader>
-                    <CardTitle>Department Distribution</CardTitle>
-                    <CardDescription>Number of employees in each department</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {Object.entries(departmentCounts).map(([dept, count]) => (
-                        <div key={dept} className="flex items-center justify-between p-3 bg-muted rounded-md">
-                          <div className="flex items-center">
-                            <Building className="h-5 w-5 text-primary mr-3" />
-                            <span className="font-medium">{dept}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="text-muted-foreground mr-2">{count} employees</span>
-                            <div className="w-2 h-2 rounded-full bg-primary"></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           <div>

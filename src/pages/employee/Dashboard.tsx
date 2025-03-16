@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Loader2, Save, Edit, Calendar, DollarSign, Building, Briefcase, 
   Mail, Phone, Clock, CheckCircle, XCircle, FileText, Bell, 
-  User, Lock, ListTodo, PieChart, ClipboardList, MessageSquare
+  User, Lock, ListTodo, ClipboardList, MessageSquare
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -236,7 +236,7 @@ const EmployeeDashboard = () => {
                     <div className="flex flex-col p-4 bg-slate-50 rounded-lg">
                       <div className="flex justify-between items-center mb-2">
                         <h3 className="text-sm font-medium text-muted-foreground">Performance</h3>
-                        <PieChart className="h-4 w-4 text-muted-foreground" />
+                        <FileText className="h-4 w-4 text-muted-foreground" />
                       </div>
                       <div className="text-2xl font-bold">92%</div>
                       <div className="text-xs text-muted-foreground mt-1">
