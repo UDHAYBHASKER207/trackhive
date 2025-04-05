@@ -28,9 +28,9 @@ const ProtectedRoute = ({
   children: React.ReactNode; 
   allowedRoles: Array<'admin' | 'employee'> 
 }) => {
-  const { user, isLoading } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return null; // Loading state is handled in Layout component
   }
 
@@ -53,11 +53,10 @@ const ProtectedRoute = ({
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      {/* Place BrowserRouter before AuthProvider */}
-      <BrowserRouter>
-        <AuthProvider>
-          <Toaster />
-          <Sonner />
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Index />} />
@@ -135,8 +134,8 @@ const App = () => (
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </AuthProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
