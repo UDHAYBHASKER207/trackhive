@@ -1,196 +1,206 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@/lib/auth-context';
+import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import Layout from '@/components/Layout';
-import { Loader2, AlertCircle } from 'lucide-react';
-
-// Define form schema
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Loader2, LogIn, User } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/lib/auth-context';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Initialize form
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
-
-  const handleSubmit = async (values: LoginFormValues) => {
-    setError(null);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Simple validation
+    if (!email || !password) {
+      toast({
+        title: 'Error',
+        description: 'Please enter both email and password',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      const response = await login(values.email, values.password);
+      const user = await login(email, password);
       
-      // Navigate based on user role
-      if (response?.role === 'admin') {
+      toast({
+        title: 'Welcome back!',
+        description: `You've successfully logged in as ${user.firstName}`,
+      });
+      
+      // Redirect based on role
+      if (user.role === 'admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/employee/dashboard');
       }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError('Invalid email or password. Please try again.');
+    } catch (error) {
+      toast({
+        title: 'Login failed',
+        description: 'Invalid credentials. Please try again.',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Quick login buttons for demo purposes
-  const quickLogin = async (email: string, password: string) => {
-    setError(null);
-    setIsLoading(true);
-    
+  // For demo purposes, provide quick login buttons
+  const quickLogin = async (role: 'admin' | 'employee') => {
     try {
-      const response = await login(email, password);
+      setIsLoading(true);
+      let loginEmail = '';
       
-      // Navigate based on user role
-      if (response?.role === 'admin') {
+      if (role === 'admin') {
+        loginEmail = 'admin@company.com';
+      } else {
+        loginEmail = 'john.doe@company.com';
+      }
+      
+      const user = await login(loginEmail, 'password');
+      
+      toast({
+        title: 'Demo Login',
+        description: `Logged in as ${user.firstName} (${role})`,
+      });
+      
+      if (role === 'admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/employee/dashboard');
       }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError('Invalid email or password. Please try again.');
+    } catch (error) {
+      toast({
+        title: 'Login failed',
+        description: 'Something went wrong with the demo login.',
+        variant: 'destructive',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Layout hideNavbar>
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="email@example.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <Button type="submit" className="w-full" disabled={isLoading}>
+    <Layout>
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
+        <div className="w-full max-w-md">
+          <Card className="backdrop-blur-md bg-white/80 border-white/20 shadow-xl">
+            <CardHeader className="space-y-1 text-center">
+              <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+              <CardDescription>Enter your credentials to sign in to your account</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium">Email</label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Email address"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="bg-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="password" className="text-sm font-medium">Password</label>
+                    <Link 
+                      to="#" 
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="bg-white"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full"
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Logging in...
+                      Signing in
                     </>
                   ) : (
-                    'Sign In'
+                    <>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Sign in
+                    </>
                   )}
                 </Button>
               </form>
-            </Form>
-            
-            <div className="space-y-4 mt-8">
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t"></span>
+                  <div className="w-full border-t border-gray-200" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-muted-foreground">
-                    Demo Accounts
-                  </span>
+                  <span className="bg-white px-2 text-gray-500">Or</span>
                 </div>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid grid-cols-2 gap-4">
                 <Button 
+                  type="button" 
                   variant="outline" 
-                  onClick={() => quickLogin('admin@company.com', 'admin123')}
+                  className="w-full"
+                  onClick={() => quickLogin('admin')}
                   disabled={isLoading}
                 >
-                  Admin: admin@company.com / admin123
+                  <User className="mr-2 h-4 w-4" />
+                  Demo Admin
                 </Button>
                 <Button 
-                  variant="outline" 
-                  onClick={() => quickLogin('employee@company.com', 'employee123')}
+                  type="button" 
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => quickLogin('employee')}
                   disabled={isLoading}
                 >
-                  Employee: employee@company.com / employee123
+                  <User className="mr-2 h-4 w-4" />
+                  Demo Employee
                 </Button>
               </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col items-center justify-center space-y-2">
-            <div className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link
-                to="/signup"
-                className="text-primary underline-offset-4 transition-colors hover:underline"
-              >
-                Sign up
-              </Link>
-            </div>
-            <div className="text-xs text-muted-foreground">
-              <Link to="/" className="hover:text-primary">
-                Back to home
-              </Link>
-            </div>
-          </CardFooter>
-        </Card>
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4">
+              <div className="text-center text-sm">
+                <span className="text-gray-600">Don't have an account? </span>
+                <Link 
+                  to="/signup" 
+                  className="text-primary font-medium hover:underline"
+                >
+                  Sign up
+                </Link>
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </Layout>
   );
