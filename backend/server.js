@@ -20,6 +20,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Create uploads directory if it doesn't exist
+const uploadDir = path.join(__dirname, 'uploads');
+const fs = require('fs');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 // Static folder for uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

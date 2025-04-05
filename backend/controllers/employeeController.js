@@ -167,7 +167,7 @@ const deleteEmployee = async (req, res) => {
     );
 
     // Delete the employee
-    await employee.remove();
+    await Employee.deleteOne({ _id: employee._id });
     
     res.json({ message: 'Employee removed' });
   } catch (error) {

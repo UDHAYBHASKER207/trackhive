@@ -68,13 +68,3 @@ export const deleteEmployee = async (id: string): Promise<boolean> => {
   await api.deleteEmployee(id, token);
   return true;
 };
-
-// Auth context creation
-export const createAuthContext = () => {
-  return {
-    user: getCurrentUser(),
-    login,
-    signup,
-    logout,
-  };
-};
