@@ -1,5 +1,9 @@
 
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
+import { adminUser, employeeUser, employees } from './mockData';
+
+// Use mock data for development
+const useMockData = true;
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -18,6 +22,20 @@ const handleResponse = async (response) => {
 // Auth API calls
 export const login = async (email, password) => {
   try {
+    if (useMockData) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Mock authentication
+      if (email === 'admin@company.com' && password === 'admin123') {
+        return { ...adminUser, token: 'mock-admin-token' };
+      } else if (email === 'employee@company.com' && password === 'employee123') {
+        return { ...employeeUser, token: 'mock-employee-token' };
+      } else {
+        throw new Error('Invalid email or password');
+      }
+    }
+    
     const response = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -34,6 +52,21 @@ export const login = async (email, password) => {
 
 export const signup = async (userData, password) => {
   try {
+    if (useMockData) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Mock signup (always returns admin for simplicity)
+      return { 
+        ...adminUser, 
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        role: userData.role,
+        token: 'mock-signup-token' 
+      };
+    }
+    
     const response = await fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: {
@@ -56,6 +89,20 @@ export const signup = async (userData, password) => {
 
 export const getCurrentUser = async (token) => {
   try {
+    if (useMockData) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Return mock user based on token
+      if (token === 'mock-admin-token') {
+        return adminUser;
+      } else if (token === 'mock-employee-token') {
+        return employeeUser;
+      } else {
+        throw new Error('Invalid token');
+      }
+    }
+    
     const response = await fetch(`${API_URL}/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -78,6 +125,12 @@ export const logout = async () => {
 // Employee API calls
 export const getEmployees = async (token) => {
   try {
+    if (useMockData) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return employees;
+    }
+    
     const response = await fetch(`${API_URL}/employees`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -92,6 +145,18 @@ export const getEmployees = async (token) => {
 
 export const getEmployee = async (id, token) => {
   try {
+    if (useMockData) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      const employee = employees.find(emp => emp.id === id);
+      
+      if (!employee) {
+        throw new Error('Employee not found');
+      }
+      
+      return employee;
+    }
+    
     const response = await fetch(`${API_URL}/employees/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -106,6 +171,25 @@ export const getEmployee = async (id, token) => {
 
 export const addEmployee = async (employeeData, token) => {
   try {
+    if (useMockData) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Create a new employee with mock ID
+      const newEmployee = {
+        id: String(Date.now()),
+        ...employeeData,
+        // Convert image File to URL if present
+        image: employeeData.image instanceof File 
+          ? URL.createObjectURL(employeeData.image)
+          : 'https://randomuser.me/api/portraits/lego/1.jpg'
+      };
+      
+      // In a real app, we'd push to the array, but for mock data
+      // we can just return the new employee
+      return newEmployee;
+    }
+    
     // Check if we have an image file to upload
     if (employeeData.image && typeof employeeData.image === 'object') {
       // Create FormData for file uploads
@@ -149,6 +233,32 @@ export const addEmployee = async (employeeData, token) => {
 
 export const updateEmployee = async (id, employeeData, token) => {
   try {
+    if (useMockData) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Find employee in our mock data
+      const employeeIndex = employees.findIndex(emp => emp.id === id);
+      
+      if (employeeIndex === -1) {
+        throw new Error('Employee not found');
+      }
+      
+      // Update the employee
+      const updatedEmployee = {
+        ...employees[employeeIndex],
+        ...employeeData,
+        // Convert image File to URL if present
+        image: employeeData.image instanceof File 
+          ? URL.createObjectURL(employeeData.image)
+          : employees[employeeIndex].image
+      };
+      
+      // In a real app, we'd update the array, but for mock data
+      // we can just return the updated employee
+      return updatedEmployee;
+    }
+    
     // Check if we have an image file to upload
     if (employeeData.image && typeof employeeData.image === 'object') {
       // Create FormData for file uploads
@@ -192,6 +302,15 @@ export const updateEmployee = async (id, employeeData, token) => {
 
 export const deleteEmployee = async (id, token) => {
   try {
+    if (useMockData) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // In a real app, we'd remove from the array
+      // Just return success for mock
+      return { message: 'Employee removed' };
+    }
+    
     const response = await fetch(`${API_URL}/employees/${id}`, {
       method: 'DELETE',
       headers: {

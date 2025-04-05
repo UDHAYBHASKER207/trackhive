@@ -1,80 +1,81 @@
 
-// This is a compatibility layer to use the new API but maintain the same interface
-// for the existing components in the system
-
+import { toast } from 'sonner';
+import { Employee } from './types';
 import * as api from './api';
-import { Employee, User, Department, Position } from './types';
 
-export const departments: Department[] = api.departments;
-export const positions: Position[] = api.positions;
-
-// Get token helper
+// Get authentication token
 const getToken = () => localStorage.getItem('token');
 
-// Auth functions
-export const getCurrentUser = () => {
-  const userStr = localStorage.getItem('user');
-  return userStr ? JSON.parse(userStr) : null;
-};
-
-export const login = async (email: string, password: string): Promise<User> => {
-  return api.login(email, password);
-};
-
-export const signup = async (userData: Partial<User>, password: string): Promise<User> => {
-  return api.signup(userData, password);
-};
-
-export const logout = async (): Promise<void> => {
-  return api.logout();
-};
-
-// Employee CRUD operations
+// Employee functions
 export const getEmployees = async (): Promise<Employee[]> => {
   const token = getToken();
   if (!token) throw new Error('Authentication required');
-  return api.getEmployees(token);
+  
+  try {
+    return await api.getEmployees(token);
+  } catch (error) {
+    console.error('Error fetching employees:', error);
+    toast.error('Failed to fetch employees');
+    throw error;
+  }
 };
 
-export const getEmployee = async (id: string): Promise<Employee | undefined> => {
+export const getEmployee = async (id: string): Promise<Employee> => {
   const token = getToken();
   if (!token) throw new Error('Authentication required');
-  return api.getEmployee(id, token);
+  
+  try {
+    return await api.getEmployee(id, token);
+  } catch (error) {
+    console.error(`Error fetching employee ${id}:`, error);
+    toast.error('Failed to fetch employee details');
+    throw error;
+  }
 };
 
-export const getDepartmentName = (id: string): string => {
-  return api.getDepartmentName(id);
-};
-
-export const getPositionName = (id: string): string => {
-  return api.getPositionName(id);
-};
-
-export const addEmployee = async (employee: Omit<Employee, 'id'>): Promise<Employee> => {
+export const addEmployee = async (employeeData: Partial<Employee>): Promise<Employee> => {
   const token = getToken();
   if (!token) throw new Error('Authentication required');
-  return api.addEmployee(employee, token);
+  
+  try {
+    const result = await api.addEmployee(employeeData, token);
+    toast.success('Employee added successfully');
+    return result;
+  } catch (error) {
+    console.error('Error adding employee:', error);
+    toast.error('Failed to add employee');
+    throw error;
+  }
 };
 
-export const updateEmployee = async (id: string, data: Partial<Employee>): Promise<Employee> => {
+export const updateEmployee = async (id: string, employeeData: Partial<Employee>): Promise<Employee> => {
   const token = getToken();
   if (!token) throw new Error('Authentication required');
-  return api.updateEmployee(id, data, token);
+  
+  try {
+    const result = await api.updateEmployee(id, employeeData, token);
+    toast.success('Employee updated successfully');
+    return result;
+  } catch (error) {
+    console.error(`Error updating employee ${id}:`, error);
+    toast.error('Failed to update employee');
+    throw error;
+  }
 };
 
-export const deleteEmployee = async (id: string): Promise<boolean> => {
+export const deleteEmployee = async (id: string): Promise<void> => {
   const token = getToken();
   if (!token) throw new Error('Authentication required');
-  await api.deleteEmployee(id, token);
-  return true;
+  
+  try {
+    await api.deleteEmployee(id, token);
+    toast.success('Employee deleted successfully');
+  } catch (error) {
+    console.error(`Error deleting employee ${id}:`, error);
+    toast.error('Failed to delete employee');
+    throw error;
+  }
 };
 
-// Auth context creation
-export const createAuthContext = () => {
-  return {
-    user: getCurrentUser(),
-    login,
-    signup,
-    logout,
-  };
-};
+// Re-export department and position helpers
+export const { departments, positions, getDepartmentName, getPositionName } = api;
