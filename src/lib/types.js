@@ -1,42 +1,40 @@
+// JavaScript doesn't have type declarations, but we keep the file for documentation purposes
 
-// Employee type definition
+// Employee object structure
 // {
-//   id: string;
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   phone: string;
-//   department: string;
-//   position: string;
-//   hireDate: string;
-//   salary: number;
-//   status: 'active' | 'inactive';
-//   image?: string;
+//   id: string
+//   firstName: string
+//   lastName: string
+//   email: string
+//   phone: string
+//   department: string
+//   position: string
+//   hireDate: string
+//   salary: number
+//   status: 'active' | 'inactive'
+//   image?: string
 // }
 
-// User type definition
+// User object structure
 // {
-//   id: string;
-//   email: string;
-//   firstName: string;
-//   lastName: string;
-//   role: 'admin' | 'employee';
-//   employeeId?: string;
+//   id: string
+//   email: string
+//   firstName: string
+//   lastName: string
+//   role: 'admin' | 'employee'
+//   employeeId?: string
 // }
 
-// Department type definition
+// Department object structure
 // {
-//   id: string;
-//   name: string;
-//   description: string;
+//   id: string
+//   name: string
+//   description: string
 // }
 
-// Position type definition
+// Position object structure
 // {
-//   id: string;
-//   name: string;
-//   department: string;
+//   id: string
+//   name: string
+//   department: string
 // }
-
-// AuthUser type definition
-// User | null
