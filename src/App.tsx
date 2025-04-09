@@ -28,9 +28,9 @@ const ProtectedRoute = ({
   children: React.ReactNode; 
   allowedRoles: Array<'admin' | 'employee'> 
 }) => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  if (loading) {
+  if (isLoading) {
     return null; // Loading state is handled in Layout component
   }
 
