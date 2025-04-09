@@ -1,243 +1,206 @@
 
-import { toast } from '@/hooks/use-toast';
+// Mock API endpoints and data
+import { v4 as uuidv4 } from 'uuid';
 
-const API_URL = 'http://localhost:5000/api';
+// Initial data for departments
+export const departments = [
+  { id: 'd1', name: 'Engineering', description: 'Software Development and Engineering' },
+  { id: 'd2', name: 'Marketing', description: 'Brand Management and Marketing Activities' },
+  { id: 'd3', name: 'HR', description: 'Human Resources Management' },
+  { id: 'd4', name: 'Finance', description: 'Financial Planning and Management' },
+  { id: 'd5', name: 'Operations', description: 'Daily Business Operations' },
+];
 
-// Helper function for handling fetch responses
-const handleResponse = async (response) => {
-  const data = await response.json();
-  
-  if (!response.ok) {
-    const error = data.message || response.statusText;
-    throw new Error(error);
-  }
-  
-  return data;
-};
+// Initial data for positions
+export const positions = [
+  { id: 'p1', name: 'Software Engineer', department: 'd1' },
+  { id: 'p2', name: 'Senior Developer', department: 'd1' },
+  { id: 'p3', name: 'Marketing Specialist', department: 'd2' },
+  { id: 'p4', name: 'HR Manager', department: 'd3' },
+  { id: 'p5', name: 'Accountant', department: 'd4' },
+  { id: 'p6', name: 'Operations Manager', department: 'd5' },
+];
 
-// Auth API calls
+// Mock database
+let employees = [
+  {
+    id: 'e1',
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@company.com',
+    phone: '123-456-7890',
+    department: 'd1',
+    position: 'p2',
+    hireDate: '2022-01-15',
+    salary: 95000,
+    status: 'active',
+    image: 'https://randomuser.me/api/portraits/men/1.jpg',
+  },
+  {
+    id: 'e2',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    email: 'jane.smith@company.com',
+    phone: '987-654-3210',
+    department: 'd2',
+    position: 'p3',
+    hireDate: '2021-05-20',
+    salary: 75000,
+    status: 'active',
+    image: 'https://randomuser.me/api/portraits/women/2.jpg',
+  },
+  {
+    id: 'e3',
+    firstName: 'Michael',
+    lastName: 'Johnson',
+    email: 'michael.johnson@company.com',
+    phone: '555-123-4567',
+    department: 'd3',
+    position: 'p4',
+    hireDate: '2020-11-10',
+    salary: 85000,
+    status: 'active',
+    image: 'https://randomuser.me/api/portraits/men/3.jpg',
+  },
+];
+
+let users = [
+  {
+    id: 'u1',
+    email: 'admin@company.com',
+    password: 'admin123',
+    firstName: 'Admin',
+    lastName: 'User',
+    role: 'admin',
+  },
+  {
+    id: 'u2',
+    email: 'john.doe@company.com',
+    password: 'password123',
+    firstName: 'John',
+    lastName: 'Doe',
+    role: 'employee',
+    employeeId: 'e1',
+  },
+];
+
+// Helper functions
 export const login = async (email, password) => {
-  try {
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    
-    return handleResponse(response);
-  } catch (error) {
-    throw new Error(error.message);
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  const user = users.find(u => u.email === email && u.password === password);
+  
+  if (user) {
+    const { password, ...userWithoutPassword } = user;
+    return { ...userWithoutPassword, token: 'mock-jwt-token' };
+  } else {
+    throw new Error('Invalid email or password');
   }
 };
 
 export const signup = async (userData, password) => {
-  try {
-    const response = await fetch(`${API_URL}/auth/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        email: userData.email,
-        password,
-        role: userData.role,
-      }),
-    });
-    
-    return handleResponse(response);
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
 
-export const getCurrentUser = async (token) => {
-  try {
-    const response = await fetch(`${API_URL}/auth/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    
-    return handleResponse(response);
-  } catch (error) {
-    throw new Error(error.message);
+  // Check if email already exists
+  if (users.some(u => u.email === userData.email)) {
+    throw new Error('Email already in use');
   }
+  
+  // Create new user
+  const newUser = {
+    id: uuidv4(),
+    ...userData,
+    password,
+  };
+  
+  // Add to "database"
+  users.push(newUser);
+  
+  const { password: _, ...userWithoutPassword } = newUser;
+  return { ...userWithoutPassword, token: 'mock-jwt-token' };
 };
 
 export const logout = async () => {
-  // Just clear the token from localStorage
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
   return true;
 };
 
-// Employee API calls
 export const getEmployees = async (token) => {
-  try {
-    const response = await fetch(`${API_URL}/employees`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    
-    return handleResponse(response);
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Token validation would go here in a real app
+  if (!token) throw new Error('Unauthorized');
+  
+  return employees;
 };
 
 export const getEmployee = async (id, token) => {
-  try {
-    const response = await fetch(`${API_URL}/employees/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    
-    return handleResponse(response);
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Token validation would go here in a real app
+  if (!token) throw new Error('Unauthorized');
+  
+  const employee = employees.find(e => e.id === id);
+  if (!employee) throw new Error('Employee not found');
+  
+  return employee;
 };
 
 export const addEmployee = async (employeeData, token) => {
-  try {
-    // Check if we have an image file to upload
-    if (employeeData.image && typeof employeeData.image === 'object') {
-      // Create FormData for file uploads
-      const formData = new FormData();
-      
-      // Add all employee data to FormData
-      Object.keys(employeeData).forEach(key => {
-        if (key === 'image') {
-          formData.append('image', employeeData.image);
-        } else {
-          formData.append(key, employeeData[key]);
-        }
-      });
-      
-      const response = await fetch(`${API_URL}/employees`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-      
-      return handleResponse(response);
-    } else {
-      // Regular JSON request without file upload
-      const response = await fetch(`${API_URL}/employees`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(employeeData),
-      });
-      
-      return handleResponse(response);
-    }
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Token validation would go here in a real app
+  if (!token) throw new Error('Unauthorized');
+  
+  const newEmployee = {
+    id: uuidv4(),
+    ...employeeData,
+  };
+  
+  employees.push(newEmployee);
+  return newEmployee;
 };
 
-export const updateEmployee = async (id, employeeData, token) => {
-  try {
-    // Check if we have an image file to upload
-    if (employeeData.image && typeof employeeData.image === 'object') {
-      // Create FormData for file uploads
-      const formData = new FormData();
-      
-      // Add all employee data to FormData
-      Object.keys(employeeData).forEach(key => {
-        if (key === 'image') {
-          formData.append('image', employeeData.image);
-        } else {
-          formData.append(key, employeeData[key]);
-        }
-      });
-      
-      const response = await fetch(`${API_URL}/employees/${id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-      
-      return handleResponse(response);
-    } else {
-      // Regular JSON request without file upload
-      const response = await fetch(`${API_URL}/employees/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(employeeData),
-      });
-      
-      return handleResponse(response);
-    }
-  } catch (error) {
-    throw new Error(error.message);
-  }
+export const updateEmployee = async (id, data, token) => {
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Token validation would go here in a real app
+  if (!token) throw new Error('Unauthorized');
+  
+  const index = employees.findIndex(e => e.id === id);
+  if (index === -1) throw new Error('Employee not found');
+  
+  employees[index] = { ...employees[index], ...data };
+  return employees[index];
 };
 
 export const deleteEmployee = async (id, token) => {
-  try {
-    const response = await fetch(`${API_URL}/employees/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    
-    return handleResponse(response);
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Token validation would go here in a real app
+  if (!token) throw new Error('Unauthorized');
+  
+  const index = employees.findIndex(e => e.id === id);
+  if (index === -1) throw new Error('Employee not found');
+  
+  employees = employees.filter(e => e.id !== id);
+  return true;
 };
 
-// Department and position helpers
-export const departments = [
-  { id: '1', name: 'Engineering', description: 'Software development and technical operations' },
-  { id: '2', name: 'Marketing', description: 'Brand management and customer acquisition' },
-  { id: '3', name: 'Human Resources', description: 'Personnel management and recruitment' },
-  { id: '4', name: 'Finance', description: 'Financial operations and accounting' },
-  { id: '5', name: 'Sales', description: 'Revenue generation and client relations' },
-  { id: '6', name: 'Operations', description: 'Business processes and logistics' },
-  { id: '7', name: 'Customer Support', description: 'Customer service and assistance' },
-];
-
-export const positions = [
-  { id: '1', name: 'Software Engineer', department: '1' },
-  { id: '2', name: 'Senior Software Engineer', department: '1' },
-  { id: '3', name: 'Product Manager', department: '1' },
-  { id: '4', name: 'Marketing Specialist', department: '2' },
-  { id: '5', name: 'Marketing Manager', department: '2' },
-  { id: '6', name: 'HR Coordinator', department: '3' },
-  { id: '7', name: 'HR Manager', department: '3' },
-  { id: '8', name: 'Accountant', department: '4' },
-  { id: '9', name: 'Financial Analyst', department: '4' },
-  { id: '10', name: 'Sales Representative', department: '5' },
-  { id: '11', name: 'Sales Manager', department: '5' },
-  { id: '12', name: 'Operations Coordinator', department: '6' },
-  { id: '13', name: 'Operations Manager', department: '6' },
-  { id: '14', name: 'Customer Support Representative', department: '7' },
-  { id: '15', name: 'Customer Support Manager', department: '7' },
-];
-
-export const getDepartmentName = (id) => {
-  return departments.find(d => d.id === id)?.name || '';
+export const getDepartmentName = (departmentId) => {
+  const department = departments.find(d => d.id === departmentId);
+  return department ? department.name : 'Unknown Department';
 };
 
-export const getPositionName = (id) => {
-  return positions.find(p => p.id === id)?.name || '';
+export const getPositionName = (positionId) => {
+  const position = positions.find(p => p.id === positionId);
+  return position ? position.name : 'Unknown Position';
 };
